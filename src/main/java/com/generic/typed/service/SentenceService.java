@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -14,11 +16,14 @@ public class SentenceService {
 
     private final SentenceRepository sentenceRepository;
 
-    public void write(SentenceCreate sentenceCreate) {
+    public Long write(SentenceCreate sentenceCreate) {
         Sentence sentence = Sentence.builder()
                 .content(sentenceCreate.getContent())
                 .isPublic(sentenceCreate.isPublic())
                 .build();
+
+        Sentence savedSentence = sentenceRepository.save(sentence);
+        return savedSentence.getId();
     }
 
 }
