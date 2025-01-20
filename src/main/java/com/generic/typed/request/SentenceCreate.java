@@ -1,11 +1,11 @@
 package com.generic.typed.request;
 
-import lombok.Builder;
+import com.generic.typed.exception.InvalidRequest;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.time.LocalDateTime;
 
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 public class SentenceCreate {
-
+    @NotBlank(message = "내용을 입력해주세요")
     private String content;
 
     private boolean isPublic;
@@ -23,7 +23,12 @@ public class SentenceCreate {
     public SentenceCreate(String content, boolean isPublic, LocalDateTime createdAt) {
         this.content = content;
         this.isPublic = isPublic;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
     }
 
+    public void validate() {
+        if (content.contains("@@@")) {
+            throw new InvalidRequest();
+        }
+    }
 }
