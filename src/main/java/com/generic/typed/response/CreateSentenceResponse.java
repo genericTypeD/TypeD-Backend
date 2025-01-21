@@ -1,7 +1,6 @@
 package com.generic.typed.response;
 
 import com.generic.typed.domain.Sentence;
-import com.generic.typed.service.SentenceService;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
