@@ -21,7 +21,6 @@ public class SentenceController {
     @PostMapping("/sentences")
     public CreateSentenceResponse write(@RequestBody @Valid SentenceCreate request) {
         request.validate();
-        Long sentenceId = sentenceService.write(request);
-        return new CreateSentenceResponse(sentenceId);
+        return sentenceService.write(request);
     }
 }
