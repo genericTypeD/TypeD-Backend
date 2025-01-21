@@ -32,14 +32,12 @@ public class SentenceService {
         Sentence sentence = sentenceRepository.findById(id)
                 .orElseThrow(()-> new SentenceNotFound());
 
-        // 조회 후 응답 클래스로 변환
-        SentenceResponse response = SentenceResponse.builder()
+        return SentenceResponse.builder()
                 .id(sentence.getId())
                 .content(sentence.getContent())
                 .isPublic(sentence.isPublic())
                 .createdAt(sentence.getCreatedAt())
                 .build();
 
-        return response;
     }
 }

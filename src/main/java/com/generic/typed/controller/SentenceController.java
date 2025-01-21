@@ -1,6 +1,5 @@
 package com.generic.typed.controller;
 
-import com.generic.typed.domain.Sentence;
 import com.generic.typed.request.SentenceCreate;
 import com.generic.typed.response.CreateSentenceResponse;
 import com.generic.typed.response.SentenceResponse;
@@ -23,8 +22,8 @@ public class SentenceController {
     }
 
     @GetMapping("/sentences/{sentenceId}")
-    public SentenceResponse get(@PathVariable(name = "sentenceId") Long id) {
-        SentenceResponse sentence = sentenceService.get(id);
+    public SentenceResponse get(@PathVariable Long sentenceId) {
+        SentenceResponse sentence = sentenceService.get(sentenceId);
         return sentence;
     }
 
