@@ -5,6 +5,7 @@ import com.generic.typed.exception.SentenceNotFound;
 import com.generic.typed.repository.SentenceRepository;
 import com.generic.typed.request.SentenceCreate;
 import com.generic.typed.response.CreateSentenceResponse;
+import com.generic.typed.response.SentenceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,18 @@ public class SentenceService {
         return new CreateSentenceResponse(savedSentence);
     }
 
-    public Sentence get(Long id) {
+    public SentenceResponse get(Long id) {
         Sentence sentence = sentenceRepository.findById(id)
                 .orElseThrow(()-> new SentenceNotFound());
 
-        return sentence;
+        // 조회 후 응답 클래스로 변환
+        SentenceResponse response = SentenceResponse.builder()
+                .id(sentence.getId())
+                .content(sentence.getContent())
+                .isPublic(sentence.isPublic())
+                .createdAt(sentence.getCreatedAt())
+                .build();
+
+        return response;
     }
 }

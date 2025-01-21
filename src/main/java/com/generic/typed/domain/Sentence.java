@@ -30,4 +30,5 @@ public class Sentence {
         this.isPublic = isPublic;
         this.createdAt = LocalDateTime.now();
     }
+
 }

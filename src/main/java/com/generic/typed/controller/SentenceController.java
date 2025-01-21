@@ -3,6 +3,7 @@ package com.generic.typed.controller;
 import com.generic.typed.domain.Sentence;
 import com.generic.typed.request.SentenceCreate;
 import com.generic.typed.response.CreateSentenceResponse;
+import com.generic.typed.response.SentenceResponse;
 import com.generic.typed.service.SentenceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,9 @@ public class SentenceController {
     }
 
     @GetMapping("/sentences/{sentenceId}")
-    public Sentence get(@PathVariable(name = "sentenceId") Long id) {
-        Sentence sentence = sentenceService.get(id);
+    public SentenceResponse get(@PathVariable(name = "sentenceId") Long id) {
+        SentenceResponse sentence = sentenceService.get(id);
         return sentence;
     }
+
 }
