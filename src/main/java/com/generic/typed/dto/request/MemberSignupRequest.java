@@ -24,7 +24,7 @@ public class MemberSignupRequest {
     private String password;
 
     @NotEmpty
-    @Pattern(regexp = "^[a-zA-Z가-힣\\\\s]{2,15}",
+    @Pattern(regexp = "^[a-zA-Z가-힣]{2,15}$",
             message = "이름은 2~15자 사이의 공백포함 영문자, 한글이어야 합니다")
     private String nickname;
 
