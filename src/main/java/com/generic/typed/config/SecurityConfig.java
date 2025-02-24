@@ -1,72 +1,53 @@
 package com.generic.typed.config;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.generic.typed.security.jwt.exception.CustomAuthenticationEntryPoint;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.jaas.memory.InMemoryConfiguration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+import org.springframework.web.cors.CorsUtils;
 
 @Configuration
-// TODO : 배포하기전에 debug 모드 false로 변경
-@EnableWebSecurity(debug = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring()
-                .requestMatchers("/favicon.ico")
-                .requestMatchers("/error")
-                .requestMatchers(toH2Console());
-    }
+    private final AuthenticationManagerConfig authenticationManagerConfig;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/login").permitAll()
-                        .anyRequest().authenticated()
+                .sessionManagement(httpSecuritySessionManagementConfigure -> httpSecuritySessionManagementConfigure.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(FormLoginConfigurer::disable)
+                .csrf(CsrfConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .httpBasic(HttpBasicConfigurer::disable)
+                .authorizeHttpRequests(httpRequest -> httpRequest
+                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/members/signup", "/members/login", "/members/refreshToken").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+                        .requestMatchers("/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("USER", "ADMIN")
                 )
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/login")
-                        .usernameParameter("username")
-                        .passwordParameter("password")
-                        .defaultSuccessUrl("/")
-                )
-                .rememberMe(rm -> rm.rememberMeParameter("remember")
-                        .alwaysRemember(false)
-                        .tokenValiditySeconds(2592000)
-                )
-                .userDetailsService(userDetailsService())
-                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(customAuthenticationEntryPoint))
+                .with(authenticationManagerConfig, customizer -> {})
                 .build();
-    }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        UserDetails user = User.withUsername("hyein")
-                .password("1234")
-                .roles("ADMIN")
-                .build();
-        manager.createUser(user);
-        return manager;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 }
