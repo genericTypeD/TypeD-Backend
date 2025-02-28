@@ -1,27 +1,22 @@
-package com.generic.typed.request;
+package com.generic.typed.dto.request;
 
 import com.generic.typed.exception.InvalidRequest;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Setter
 @Getter
 @ToString
-public class SentenceCreate {
+@NoArgsConstructor
+public class SentenceCreateRequest {
     @NotBlank(message = "내용을 입력해주세요")
-    private final String content;
+    private String content;
 
     private boolean isPublic;
 
 
     @Builder
-    public SentenceCreate(String content, boolean isPublic) {
+    public SentenceCreateRequest(String content, boolean isPublic) {
         this.content = content;
         this.isPublic = isPublic;
     }

@@ -1,13 +1,11 @@
 package com.generic.typed.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -19,16 +17,35 @@ public class Sentence {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+
+    @Column(nullable = false, length = 5000)
     private String content;
 
+    @Column(nullable = false)
     private boolean isPublic;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
-    @Builder
-    public Sentence(String content, boolean isPublic) {
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @Column(length = 100)
+    private String deviceId;
+    public Sentence(String content, boolean isPublic, LocalDateTime createdAt, Member member, String deviceId) {
         this.content = content;
         this.isPublic = isPublic;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.member = member;
+        this.deviceId = deviceId;
     }
 
+    public void update(String content, boolean isPublic) {
+        this.content = content;
+        this.isPublic = isPublic;
+    }
 }

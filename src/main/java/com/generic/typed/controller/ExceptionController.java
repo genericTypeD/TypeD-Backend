@@ -1,7 +1,7 @@
 package com.generic.typed.controller;
 
 import com.generic.typed.exception.TypedException;
-import com.generic.typed.response.ErrorResponse;
+import com.generic.typed.dto.response.ErrorResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.generic.typed.response;
+package com.generic.typed.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
