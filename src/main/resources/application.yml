@@ -1,1 +1,8 @@
 spring:
+  config:
+    import: env.yml
+
+  profiles:
+    active: dev
+    include: jwt
+
