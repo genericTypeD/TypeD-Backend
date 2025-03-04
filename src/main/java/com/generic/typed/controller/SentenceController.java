@@ -1,8 +1,10 @@
 package com.generic.typed.controller;
 
 import com.generic.typed.dto.request.SentenceCreateRequest;
+import com.generic.typed.dto.request.SentenceUpdateRequest;
 import com.generic.typed.dto.response.MySentenceListResponse;
 import com.generic.typed.dto.response.SentenceCreateResponse;
+import com.generic.typed.dto.response.SentenceUpdateResponse;
 import com.generic.typed.security.jwt.util.IfLogin;
 import com.generic.typed.security.jwt.util.LoginMemberDto;
 import com.generic.typed.service.SentenceService;
@@ -62,33 +64,26 @@ public class SentenceController {
         return ResponseEntity.ok(response);
     }
 
-//    /**
-//     * 공개 문장 목록 조회 (피드) - 로그인 필요
-//     */
-//    @GetMapping("/feed")
-//    public ResponseEntity<SentenceListResponse> getFeed(@IfLogin LoginMemberDto loginMemberDto) {
-//        SentenceListResponse response = sentenceService.getPublicSentences();
-//        return ResponseEntity.ok(response);
-//    }
-
 
     /**
      * 문장 수정 - 로그인 불필요, deviceId로 소유자 확인
      */
-//    @PutMapping("/{sentenceId}")
-//    public ResponseEntity<SentenceResponse> updateSentence(
-//            @RequestHeader(value = "X-Device-Id", required = false) String deviceId,
-//            @IfLogin(required = false) LoginMemberDto loginMemberDto,
-//            @PathVariable("sentenceId") Long sentenceId,
-//            @RequestBody SentenceRequest request) {
-//
-//        String userIdentifier = loginMemberDto != null
-//                ? loginMemberDto.getEmail()
-//                : (deviceId != null ? deviceId : "anonymous");
-//
-//        SentenceResponse response = sentenceService.updateSentence(userIdentifier, sentenceId, request);
-//        return ResponseEntity.ok(response);
-//    }
+    @PutMapping("/{sentenceId}")
+    public ResponseEntity<SentenceUpdateResponse> updateSentence(
+            @RequestHeader(value = "X-Device-Id", required = false) String deviceId,
+            @IfLogin(required = false) LoginMemberDto loginMemberDto,
+            @PathVariable("sentenceId") Long sentenceId,
+            @RequestBody SentenceUpdateRequest request) {
+
+        String userIdentifier = loginMemberDto != null && loginMemberDto.getEmail() != null
+                ? loginMemberDto.getEmail()
+                : (deviceId != null
+                ? deviceId
+                : "anonymous");
+
+        SentenceUpdateResponse response = sentenceService.updateSentence(userIdentifier, sentenceId, request);
+        return ResponseEntity.ok(response);
+    }
 
     /**
      * 문장 삭제 - 로그인 불필요, deviceId로 소유자 확인
@@ -99,9 +94,12 @@ public class SentenceController {
             @IfLogin(required = false) LoginMemberDto loginMemberDto,
             @PathVariable("sentenceId") Long sentenceId) {
 
-        String userIdentifier = loginMemberDto != null
+
+        String userIdentifier = loginMemberDto != null && loginMemberDto.getEmail() != null
                 ? loginMemberDto.getEmail()
-                : (deviceId != null ? deviceId : "anonymous");
+                : (deviceId != null
+                ? deviceId
+                : "anonymous");
 
         sentenceService.deleteSentence(userIdentifier, sentenceId);
         return ResponseEntity.ok().build();
