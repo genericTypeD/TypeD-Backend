@@ -37,7 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/categories",
                 "/categories/*/subcategories",
                 "/categories/*/subcategories/all",
-                "/categories/*/subcategories/*"
+                "/categories/*/subcategories/*",
+                "/sentences",
+                "/sentences/*",
         };
 
         boolean shouldNotFilter = Arrays.stream(categoryPatterns)
