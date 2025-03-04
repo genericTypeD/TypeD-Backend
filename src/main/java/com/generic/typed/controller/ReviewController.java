@@ -1,9 +1,9 @@
 package com.generic.typed.controller;
 
 import com.generic.typed.dto.response.MyReviewResponse;
-import com.generic.typed.request.ReviewCreateRequest;
-import com.generic.typed.response.MyReviewListResponse;
-import com.generic.typed.response.ReviewCreateResponse;
+import com.generic.typed.dto.request.ReviewCreateRequest;
+import com.generic.typed.dto.response.MyReviewListResponse;
+import com.generic.typed.dto.response.ReviewCreateResponse;
 import com.generic.typed.security.jwt.util.IfLogin;
 import com.generic.typed.security.jwt.util.LoginMemberDto;
 import com.generic.typed.service.ReviewService;
@@ -62,14 +62,6 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 공개 서평 목록 조회 (피드)
-     */
-    @GetMapping
-    public ResponseEntity<MyReviewListResponse> getPublicReviews() {
-        MyReviewListResponse response = reviewService.getPublicReviews();
-        return ResponseEntity.ok(response);
-    }
 
     /**
      * 서평 수정 - 로그인 불필요, deviceId로 소유자 확인

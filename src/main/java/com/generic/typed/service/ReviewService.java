@@ -1,14 +1,14 @@
 package com.generic.typed.service;
 
-import com.generic.kakaoApi.KakaoBookApi;
+import com.generic.typed.kakaoApi.KakaoBookApi;
 import com.generic.typed.domain.Member;
 import com.generic.typed.domain.Review;
 import com.generic.typed.dto.response.MyReviewResponse;
 import com.generic.typed.repository.ReviewRepository;
-import com.generic.typed.request.ReviewCreateRequest;
-import com.generic.typed.response.BookSearchResponse;
-import com.generic.typed.response.MyReviewListResponse;
-import com.generic.typed.response.ReviewCreateResponse;
+import com.generic.typed.dto.request.ReviewCreateRequest;
+import com.generic.typed.dto.response.BookSearchResponse;
+import com.generic.typed.dto.response.MyReviewListResponse;
+import com.generic.typed.dto.response.ReviewCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,25 +35,31 @@ public class ReviewService {
         Member member = null;
         if (userIdentifier != null && userIdentifier.contains("@")) {
             try {
-                // 로그인한 사용자면 조회 시도하되 예외 발생 시 무시
                 member = memberService.findByEmail(userIdentifier);
             } catch (Exception e) {
                 System.out.println("사용자를 찾을 수 없습니다: " + userIdentifier);
             }
         }
 
-        // 책 정보 조회
-        String bookTitle = "";
-        String bookAuthor = "";
-        String bookThumbnail = "";
-        String isbn = request.getIsbn();
+        // 책 정보 수집
+        String bookTitle = request.getBookTitle();
+        String bookAuthor = ""; // 클라이언트에서 제공하지 않으면 비워둠
+        String bookThumbnail = request.getThumbnail();
+        String isbn = request.getBookIsbn();
 
-        if (isbn != null && !isbn.isEmpty()) {
-            BookSearchResponse.BookDocument book = bookApi.getBookByIsbn(isbn);
-            if (book != null) {
-                bookTitle = book.getTitle();
-                bookAuthor = String.join(", ", book.getAuthors());
-                bookThumbnail = book.getThumbnail();
+        // 추가 정보가 필요하면 ISBN으로 책 정보 조회 가능
+        if (isbn != null && !isbn.isEmpty() && (bookAuthor == null || bookAuthor.isEmpty())) {
+            try {
+                BookSearchResponse.BookDocument book = bookApi.getBookByIsbn(isbn);
+                if (book != null) {
+                    bookAuthor = String.join(", ", book.getAuthors());
+                    // 썸네일이 없는 경우에만 API에서 가져옴
+                    if (bookThumbnail == null || bookThumbnail.isEmpty()) {
+                        bookThumbnail = book.getThumbnail();
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("책 정보 조회 실패: " + e.getMessage());
             }
         }
 
@@ -69,10 +75,6 @@ public class ReviewService {
                 bookThumbnail,
                 isbn
         );
-
-        System.out.println("Member: " + member);
-        System.out.println("UserIdentifier: " + userIdentifier);
-        System.out.println("Device ID being set: " + (member == null ? userIdentifier : null));
 
         // 저장
         Review savedReview = reviewRepository.save(review);

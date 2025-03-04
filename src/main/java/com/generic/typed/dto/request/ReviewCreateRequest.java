@@ -1,6 +1,5 @@
-package com.generic.typed.request;
+package com.generic.typed.dto.request;
 
-import com.generic.typed.exception.InvalidRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -14,18 +13,31 @@ public class ReviewCreateRequest {
 
     private boolean isPublic;
 
-    private String isbn;
+    private String bookIsbn;
+
+    private String bookTitle;
+
+    private String thumbnail;
 
     @Builder
-    public ReviewCreateRequest(String content, boolean isPublic, String isbn) {
+    public ReviewCreateRequest(String content, boolean isPublic, String bookIsbn,
+                               String bookTitle, String thumbnail) {
         this.content = content;
         this.isPublic = isPublic;
-        this.isbn = isbn;
+        this.bookIsbn = bookIsbn;
+        this.bookTitle = bookTitle;
+        this.thumbnail = thumbnail;
     }
 
+    // getter, setter 메서드...
+
     public void validate() {
-        if (content.contains("@@@")) {
-            throw new InvalidRequest();
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("서평 내용을 입력해주세요");
+        }
+
+        if (bookTitle == null || bookTitle.trim().isEmpty()) {
+            throw new IllegalArgumentException("책 제목을 입력해주세요");
         }
     }
 }

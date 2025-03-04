@@ -1,4 +1,4 @@
-package com.generic.typed.response;
+package com.generic.typed.dto.response;
 
 import com.generic.typed.domain.Review;
 import lombok.Builder;
@@ -9,23 +9,23 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ReviewCreateResponse {
-    private final Long reviewId;
+    private final Long id;
     private final String content;
     private final boolean isPublic;
     private final LocalDateTime createdAt;
     private final String bookTitle;
-    private final String bookAuthor;
-    private final String bookThumbnail;
+    private final String bookIsbn;
+    private final String thumbnail;
 
     public static ReviewCreateResponse from(Review review) {
         return ReviewCreateResponse.builder()
-                .reviewId(review.getId())
+                .id(review.getId())
                 .content(review.getContent())
                 .isPublic(review.isPublic())
                 .createdAt(review.getCreatedAt())
                 .bookTitle(review.getBookTitle())
-                .bookAuthor(review.getBookAuthor())
-                .bookThumbnail(review.getBookThumbnail())
+                .bookIsbn(review.getIsbn())
+                .thumbnail(review.getBookThumbnail())
                 .build();
     }
 }

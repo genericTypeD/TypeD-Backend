@@ -1,7 +1,6 @@
-package com.generic.typed.response;
+package com.generic.typed.dto.response;
 
 import com.generic.typed.domain.Review;
-import com.generic.typed.dto.response.MyReviewResponse;
 import lombok.Builder;
 import lombok.Getter;
 
