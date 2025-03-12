@@ -1,5 +1,7 @@
 package com.generic.typed.security.jwt.filter;
 
+import com.generic.typed.security.jwt.exception.JwtExceptionCode;
+import com.generic.typed.security.jwt.token.JwtAuthenticationToken;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -16,11 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.generic.typed.security.jwt.exception.JwtExceptionCode;
-import com.generic.typed.security.jwt.token.JwtAuthenticationToken;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -31,24 +30,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
+        String method = request.getMethod();
         AntPathMatcher pathMatcher = new AntPathMatcher();
 
-        String[] categoryPatterns = {
-                "/categories",
-                "/categories/*/subcategories",
-                "/categories/*/subcategories/all",
-                "/categories/*/subcategories/*",
-                "/sentences",
-                "/sentences/*",
+        log.debug("URI: {}, Method: {}", path, method);
+
+
+        // 2. 인증이 필요 없는 공개 API 경로만 정의
+        String[] publicPatterns = {
+                "/",                     // 메인 페이지
+                "/auth/signup",          // 회원가입
+                "/auth/login",           // 로그인
+                "/auth/refreshToken",    // 토큰 갱신
+                "/books/search",         // 책 검색 API
+                "/error"                 // 에러 페이지
+                // 기타 필요한 공개 API 추가
         };
 
-        boolean shouldNotFilter = Arrays.stream(categoryPatterns)
-                .anyMatch(pattern -> {
-                    boolean matched = pathMatcher.match(pattern, path);
-                    return matched;
-                });
+        // 3. OPTIONS 요청(CORS preflight)은 항상 허용
+        if (request.getMethod().equals("OPTIONS")) {
+            return true;
+        }
 
-        return shouldNotFilter || Arrays.asList("/", "/members/signup", "/members/login", "/members/refreshToken").contains(path);
+        // 4. 공개 API 패턴과 일치하는지 확인
+        for (String pattern : publicPatterns) {
+            if (pathMatcher.match(pattern, path)) {
+                log.debug("공개 API 경로 일치: {}", pattern);
+                return true;
+            }
+        }
+
+        // 5. 그 외 모든 API는 JWT 인증 필요
+        return false;
     }
 
     @Override

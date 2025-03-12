@@ -36,15 +36,10 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/auth/signup", "/auth/login", "/auth/refreshToken").permitAll()
                         .requestMatchers(HttpMethod.GET, "/books/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/reveiws/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sentences").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sentences/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/sentences/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/reviews/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/sentences/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/reviews/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/sentences/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/reviews/**").permitAll()
+                        // 문장 관련 API는 인증 필요
+                        .requestMatchers(HttpMethod.GET, "/sentences").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/sentences").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/sentences/**").authenticated()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("USER", "ADMIN")
@@ -52,7 +47,6 @@ public class SecurityConfig {
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .with(authenticationManagerConfig, customizer -> {})
                 .build();
-
     }
 
     @Bean
