@@ -21,7 +21,6 @@ public class Sentence {
     @JoinColumn(name = "member_id")
     private Member member;
 
-
     @Column(nullable = false, length = 5000)
     private String content;
 
@@ -34,14 +33,13 @@ public class Sentence {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(length = 100)
-    private String deviceId;
-    public Sentence(String content, boolean isPublic, LocalDateTime createdAt, Member member, String deviceId) {
+    // deviceId 필드 제거
+
+    public Sentence(String content, boolean isPublic, LocalDateTime createdAt, Member member) {
         this.content = content;
         this.isPublic = isPublic;
         this.createdAt = createdAt;
         this.member = member;
-        this.deviceId = deviceId;
     }
 
     public void update(String content, boolean isPublic) {
