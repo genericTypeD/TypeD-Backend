@@ -43,8 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/auth/login",           // 로그인
                 "/auth/refreshToken",    // 토큰 갱신
                 "/books/search",         // 책 검색 API
-                "/error"                 // 에러 페이지
-                // 기타 필요한 공개 API 추가
+                "/error",               // 에러 페이지
+                "/h2-console/**"
         };
 
         // 3. OPTIONS 요청(CORS preflight)은 항상 허용
@@ -116,6 +116,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
+        log.info("Authorization 헤더: {}", authorization);
+
         if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer")) {
             String[] arr = authorization.split(" ");
             return arr[1];

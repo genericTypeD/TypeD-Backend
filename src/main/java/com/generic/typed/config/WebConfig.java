@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*") // 모든 클라이언트 허용 접근
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*") // 모든 header 허용
                 .exposedHeaders("Authorization", "RefreshToken")
                 .allowCredentials(true); // 모바일 앱 지원은 credentials 불필요
