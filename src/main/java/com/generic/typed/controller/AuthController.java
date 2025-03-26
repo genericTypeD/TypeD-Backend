@@ -87,7 +87,7 @@ public class AuthController {
         return new ResponseEntity(loginResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity logout(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
         return new ResponseEntity(HttpStatus.OK);

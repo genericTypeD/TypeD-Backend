@@ -32,8 +32,20 @@ public class MemberService {
         if (memberRepository.findByNickname(member.getNickname()).isPresent()) {
             throw new IllegalArgumentException("이미 사용중인 사용자 이름입니다.");
         }
-        Optional<Role> userRole = roleRepository.findByName("ROLE_USER");
-        member.addRole(userRole.get());
+        Optional<Role> userRoleOpt = roleRepository.findByName("ROLE_USER");
+        Role userRole;
+
+        if (userRoleOpt.isPresent()) {
+            userRole = userRoleOpt.get();
+        } else {
+            // Role이 없으면 새로 생성
+            userRole = new Role();
+            userRole.setRoleId(1L);
+            userRole.setName("ROLE_USER");
+            userRole = roleRepository.save(userRole);
+        }
+
+        member.addRole(userRole);
         Member saveMember = memberRepository.save(member);
         return saveMember;
     }

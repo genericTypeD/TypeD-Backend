@@ -15,5 +15,6 @@ public class RefreshToken {
 
     private Long memberId;
 
+    @Column(name = "token_value")
     private String value;
 }
